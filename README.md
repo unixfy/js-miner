@@ -1,2 +1,2 @@
-# mine.x2c0.net
+# ch-miner
 PoC of CoinHive's JavaScript Monero Miner

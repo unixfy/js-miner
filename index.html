@@ -14,27 +14,97 @@
   <!-- FA -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-  <style>
-    body {
-      padding-top: 30px;
-    }
-  </style>
 </head>
 
 <body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+    <a class="navbar-brand" href="#">X2C0 Miner</a>
+
+    <div class="collapse navbar-collapse" id="navbarToggler">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Miner <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://x2c0.net">Home</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br />
   <div class="container">
     <div class="alert alert-info" role="alert">
-      To stop the miner, close this page or press the button to the right. <button type="button" class="btn btn-danger" id="miner-force-stop" data-toggle="modal" data-target="#stoppedModal">Force Stop</button>
+      To stop the miner, close this page or press the button to the right. <button type="button" class="btn btn-danger" id="miner-stop" data-toggle="modal" data-target="#stoppedModal">Stop</button>
       <br />
+    </div>
+    <div class="alert alert-danger" role="alert" id="wasmSupportWarning">
+      <b>Update your browser!</b> It appears to not <a href="https://caniuse.com/#search=wasm" target="_blank">support WebAssembly</a>. We will have to fall back to the slower ASM.js.
+    </div>
+    <hr />
+    <div class="row">
+      <div class="col-lg-4">
+        <center>
+          <b>Hashes Per Second</b> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Total number of hashes per second between all threads. Most CPUs will only update this once per second (so there may be a slight 'lag')."></i><br
+          /><br />
+          <h1 id="hashespersecond">N/A</h1>
+        </center>
+      </div>
+      <div class="col-lg-4">
+        <center>
+          <b>Total Hashes</b> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Total number of hashes your machine has solved during this session."></i><br /><br />
+          <h1 id="totalhashes">0</h1>
+        </center>
+      </div>
+      <div class="col-lg-4">
+        <center>
+          <b>Accepted Hashes</b> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Hashes accepted by the XMR pool. This value resets each time the miner is stopped."></i><br /><br />
+          <h1 id="acceptedhashes">N/A</h1>
+        </center>
+      </div>
+    </div>
+    <div class="row" style="padding-top:10px;">
+      <div class="col-lg-4">
+        <center>
+          <b>Miner Running</b> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Whether the miner is running or not."></i><br /><br />
+          <h1 id="isrunning">No Data</h1>
+        </center>
+      </div>
+      <div class="col-lg-4">
+        <center>
+          <b>WebAssembly Support</b> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="Whether your browser supports WebAssembly. Most recent browsers do. We will fall back to the slower ASM.js if yours doesn't."></i><br
+          /><br />
+          <h1 id="wasmsupport">No Data</h1>
+        </center>
+      </div>
+      <div class="col-lg-4">
+        <center>
+          <b># of Threads</b> <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="The number of threads that your CPU has (includes HT)."></i><br /><br />
+          <h1 id="numthreads">N/A</h1>
+        </center>
+      </div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <div class="container">
+    <footer>
+      <center>
+        <br />
+        <hr /> &copy; 2017 Unixfy. <br /><a href="https://github.com/unixfy/ch-miner"><i class="fa fa-github"></i> unixfy/ch-miner</a>
+        <br /><small><i>This site is not associated, nor endorsed, by CoinHive.</i></small>
+      </center>
+    </footer>
+  </div>
+
   <!-- Info Modal -->
-  <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Miner</h5>
+          <h5 class="modal-title" id="infoModalLabel">Miner</h5>
           </button>
         </div>
         <div class="modal-body">
@@ -84,22 +154,58 @@
   <script type="text/javascript">
     $(window).on('load', function() {
       $('#infoModal').modal('show');
+      $(function() {
+        $('[data-toggle="tooltip"]').tooltip({
+          html: true
+        })
+      })
+      miner = new CoinHive.Anonymous('9H09GonNox8vpilC6yXiRszHrZOeKxxJ', {
+        autothreads: true
+      });
     });
   </script>
 
   <script type="text/javascript">
     $('#miner-start').click(function() {
-      miner = new CoinHive.Anonymous('9H09GonNox8vpilC6yXiRszHrZOeKxxJ', {
-        autothreads: true
-      });
       miner.start(CoinHive.IF_EXCLUSIVE_TAB);
     });
+
     $('#miner-start-again').click(function() {
       miner.start(CoinHive.IF_EXCLUSIVE_TAB);
     });
-    $('#miner-force-stop').click(function() {
+
+    $('#miner-stop').click(function() {
       miner.stop();
     });
+
+    // Output Data
+    setInterval(function() {
+      var hashesPerSecond = miner.getHashesPerSecond();
+      var totalHashes = miner.getTotalHashes(interpolate = true);
+      var acceptedHashes = miner.getAcceptedHashes();
+      var isRunning = miner.isRunning();
+      var wasmSupport = miner.hasWASMSupport();
+      var numThreads = miner.getNumThreads();
+
+      // Output to HTML elements...
+      $('h1#hashespersecond').html(hashesPerSecond);
+      $('h1#totalhashes').html(totalHashes);
+      $('h1#acceptedhashes').html(acceptedHashes);
+      if (isRunning == true) {
+        $('h1#isrunning').html('<i class="fa fa-check-circle" aria-hidden="true" style="color:green;"></i>');
+      } else {
+        $('h1#isrunning').html('<i class="fa fa-times-circle" aria-hidden="true" style="color:red;"></i>');
+      }
+      if (wasmSupport == true) {
+        $('h1#wasmsupport').html('<i class="fa fa-check-circle" aria-hidden="true" style="color:green;"></i>');
+        $('#wasmSupportWarning').hide();
+
+      } else {
+        $('h1#wasmsupport').html('<i class="fa fa-times-circle" aria-hidden="true" style="color:red;"></i>');
+        $('#wasmSupportWarning').show();
+      }
+      $('h1#numthreads').html(numThreads);
+    }, 50);
   </script>
 </body>
 
